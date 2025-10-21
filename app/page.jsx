@@ -19,7 +19,7 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
-    category: '',
+    categories: [],
     fit: true,
     ingredients: [],
     instructions: '',
@@ -51,7 +51,7 @@ export default function Home() {
   const handleAddRecipeModal = () => {
     setFormData({
       title: '',
-      category: 'DESAYUNO',
+      categories: [],
       fit: true,
       ingredients: [],
       instructions: '',
@@ -91,6 +91,7 @@ export default function Home() {
     if (!formData.title.trim()) newErrors.title = 'El título es obligatorio';
     if (!formData.ingredients.trim()) newErrors.ingredients = 'Los ingredientes son obligatorios';
     if (!formData.instructions.trim()) newErrors.instructions = 'Las instrucciones son obligatorias';
+    if (formData.categories.length === 0) newErrors.categories = 'Seleccioná al menos una categoría';
     return newErrors;
   };
 
@@ -217,18 +218,28 @@ export default function Home() {
             {/* Category */}
             <fieldset className={modalStyle.fieldset}>
               <legend className={modalStyle.legend}>Categoría:</legend>
-              {['DESAYUNO', 'BRUNCH', 'ALMUERZO', 'MERIENDA', 'CENA'].map(cat => (
+              {['DESAYUNO', 'BRUNCH', 'ALMUERZO', 'MERIENDA', 'CENA', 'POSTRE'].map(cat => (
                 <label key={cat} className={modalStyle.radioLabel}>
                   <input
-                    type="radio"
-                    name="category"
+                    type="checkbox"
                     value={cat}
-                    checked={formData.category === cat}
-                    onChange={(e) => handleInputChange('category', e.target.value)}
-                    className={modalStyle.radioInput} />
+                    checked={formData.categories.includes(cat)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFormData(prev => ({ ...prev, categories: [...prev.categories, cat] }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          categories: prev.categories.filter(c => c !== cat)
+                        }));
+                      }
+                    }}
+                    className={modalStyle.checkboxInput}
+                  />
                   {cat.charAt(0) + cat.slice(1).toLowerCase()}
                 </label>
               ))}
+              {errors.categories && <p className={modalStyle.error}>{errors.categories}</p>}
             </fieldset>
 
             {/* Fit */}

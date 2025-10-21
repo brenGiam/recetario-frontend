@@ -1,10 +1,10 @@
 const BASE_URL = 'http://localhost:8080'
 
-export const getRecipes = async (category, fit, page = 0, size = 10) => {
+export const getRecipes = async (categories = [], fit, page = 0, size = 10) => {
     try {
         const params = new URLSearchParams();
 
-        if (category) params.append('category', category);
+        (categories || []).forEach(cat => params.append('categories', cat));
         if (fit !== undefined && fit !== null) params.append('fit', fit);
 
         params.append('page', page);
@@ -54,7 +54,7 @@ export const createRecipe = async (recipeData) => {
 
         const recipe = {
             title: recipeData.title,
-            category: recipeData.category,
+            categories: recipeData.categories,
             fit: recipeData.fit,
             ingredients: recipeData.ingredients,
             instructions: recipeData.instructions,
@@ -113,7 +113,7 @@ export const updateRecipe = async (recipeData, recipeId) => {
         const recipe = {
             id: recipeId,
             title: recipeData.title,
-            category: recipeData.category,
+            categories: recipeData.categories,
             fit: recipeData.fit,
             ingredients: recipeData.ingredients,
             instructions: recipeData.instructions,

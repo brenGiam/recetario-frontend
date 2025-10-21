@@ -20,7 +20,7 @@ export default function RecipeDetail() {
     const [formMode, setFormMode] = useState('edit');
     const [formData, setFormData] = useState({
         title: '',
-        category: '',
+        categories: [],
         fit: true,
         ingredients: [],
         instructions: '',
@@ -34,7 +34,7 @@ export default function RecipeDetail() {
     const handleEditModal = () => {
         setFormData({
             title: recipe.title || '',
-            category: recipe.category || '',
+            categories: recipe.categories || [],
             fit: recipe.fit,
             ingredients: (recipe.ingredients || []).join(', '),
             instructions: recipe.instructions || '',
@@ -77,19 +77,10 @@ export default function RecipeDetail() {
 
     const validateFields = () => {
         const newErrors = {};
-
-        if (!formData.title || !formData.title.trim()) {
-            newErrors.title = 'El título es obligatorio';
-        }
-
-        if (!formData.ingredients || !formData.ingredients.length) {
-            newErrors.ingredients = 'Los ingredientes son obligatorios';
-        }
-
-        if (!formData.instructions || !formData.instructions.trim()) {
-            newErrors.instructions = 'Las instrucciones son obligatorias';
-        }
-
+        if (!formData.title.trim()) newErrors.title = 'El título es obligatorio';
+        if (!formData.ingredients.trim()) newErrors.ingredients = 'Los ingredientes son obligatorios';
+        if (!formData.instructions.trim()) newErrors.instructions = 'Las instrucciones son obligatorias';
+        if (formData.categories.length === 0) newErrors.categories = 'Seleccioná al menos una categoría';
         return newErrors;
     };
 
@@ -163,14 +154,9 @@ export default function RecipeDetail() {
         try {
             const payload = {
                 ...formData,
-                ingredients: formData.ingredients
-                    .split(',')
-                    .map(i => i.trim())
-                    .filter(i => i)
+                ingredients: formData.ingredients.split(',').map(i => i.trim()).filter(i => i)
             };
-
-            const finalData = { ...payload, id };
-            await updateRecipe(finalData, id);
+            await updateRecipe({ ...payload, id }, id);
             await refreshRecipe();
             setModalOpen(false);
         } catch (err) {
@@ -209,7 +195,7 @@ export default function RecipeDetail() {
             <div className={style.recipeDetailContainer}>
                 <h1 className={style.recipeTitle}>{recipe.title}</h1>
                 <div className={style.recipeMeta}>
-                    <p><FontAwesomeIcon icon={faUtensils} /> {recipe.category}</p>
+                    <p><FontAwesomeIcon icon={faUtensils} />   {(recipe.categories || []).join(', ')}</p>
                     <p><FontAwesomeIcon icon={faLeaf} /> Fit: {recipe.fit ? 'Sí' : 'No'}</p>
                 </div>
                 <div className={style.recipeContentContainer}>
@@ -317,20 +303,29 @@ export default function RecipeDetail() {
                     <div className={modalStyle.formContainer}>
                         {/* Category */}
                         <fieldset className={modalStyle.fieldset}>
-                            <legend className={modalStyle.legend}>Categoría:</legend>
-                            {['DESAYUNO', 'BRUNCH', 'ALMUERZO', 'MERIENDA', 'CENA'].map(cat => (
+                            <legend className={modalStyle.legend}>Categorías:</legend>
+                            {['DESAYUNO', 'BRUNCH', 'ALMUERZO', 'MERIENDA', 'CENA', 'POSTRE'].map(cat => (
                                 <label key={cat} className={modalStyle.radioLabel}>
                                     <input
-                                        type="radio"
-                                        name="category"
+                                        type="checkbox"
                                         value={cat}
-                                        checked={formData.category === cat}
-                                        onChange={(e) => handleInputChange('category', e.target.value)}
-                                        className={modalStyle.radioInput}
+                                        checked={formData.categories.includes(cat)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setFormData(prev => ({ ...prev, categories: [...prev.categories, cat] }));
+                                            } else {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    categories: prev.categories.filter(c => c !== cat)
+                                                }));
+                                            }
+                                        }}
+                                        className={modalStyle.checkboxInput}
                                     />
                                     {cat.charAt(0) + cat.slice(1).toLowerCase()}
                                 </label>
                             ))}
+                            {errors.categories && <p className={modalStyle.error}>{errors.categories}</p>}
                         </fieldset>
 
                         {/* Fit */}
