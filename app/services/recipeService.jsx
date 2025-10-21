@@ -1,14 +1,14 @@
 const BASE_URL = 'http://localhost:8080'
 
-export const getRecipes = async (filters = {}) => {
+export const getRecipes = async (category, fit, page = 0, size = 10) => {
     try {
         const params = new URLSearchParams();
 
-        if (filters.category) params.append('category', filters.category);
-        if (filters.fit) params.append('fit', filters.fit);
+        if (category) params.append('category', category);
+        if (fit !== undefined && fit !== null) params.append('fit', fit);
 
-        params.append('page', filters.page || 0);
-        params.append('size', filters.size || 20);
+        params.append('page', page);
+        params.append('size', size);
 
         const queryString = params.toString();
         const url = `${BASE_URL}/recipes/filter${queryString ? `?${queryString}` : ''}`;
@@ -18,13 +18,13 @@ export const getRecipes = async (filters = {}) => {
         });
 
         if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+            const errorData = await response.text();
+            throw new Error(`Error ${response.status}: ${errorData || response.statusText}`);
         }
 
-        const data = await response.json();
-        return data;
+        return await response.json();
     } catch (error) {
-        console.error('Error al obtener recetas:', error);
+        console.error("Error al obtener recetas:", error);
         throw error;
     }
 };

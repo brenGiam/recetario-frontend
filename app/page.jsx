@@ -12,12 +12,10 @@ import style from '@/app/styles/home.module.css';
 export default function Home() {
   const router = useRouter();
   const [recipes, setRecipes] = useState([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeFilters, setActiveFilters] = useState({
-    category: null,
-    fit: null,
-  });
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -30,12 +28,13 @@ export default function Home() {
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({})
 
-  const loadRecipes = async (filters = {}) => {
+  const loadRecipes = async (pageNumber = 0) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getRecipes(filters);
+      const data = await getRecipes(null, null, pageNumber, 6);
       setRecipes(data.content || []);
+      setTotalPages(data.totalPages || 0);
     } catch (error) {
       console.error('Error al obtener Recetas:', error);
       setRecipes([]);
@@ -46,8 +45,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    loadRecipes(activeFilters);
-  }, [activeFilters]);
+    loadRecipes(page);
+  }, [page]);
 
   const handleAddRecipeModal = () => {
     setFormData({
@@ -114,7 +113,8 @@ export default function Home() {
 
       await createRecipe(payload);
       setModalOpen(false);
-      await loadRecipes(activeFilters);
+      await loadRecipes(0);
+      setPage(0);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -123,12 +123,11 @@ export default function Home() {
   };
 
   const cleanFilters = () => {
-    setActiveFilters({
-      category: null,
-      fit: null,
-    });
+    setCategory(null);
+    setFit(null);
+    setPage(0);
     clearSelection();
-    router.push('/galeria');
+    router.push('/');
   };
 
   if (loading) return <div className={style.loading}>Cargando Recetas...</div>;
@@ -147,13 +146,34 @@ export default function Home() {
           <p className={style.noRecipesMessage}>
             {Object.values(activeFilters).some(f => f !== null)
               ? 'No se encontraron recetas con esos filtros'
-              : 'No hay recetas registradas'
-            }
+              : 'No hay recetas registradas'}
           </p>
         ) : (
           recipes.map(recipe => (
             <RecipeCard key={recipe.id} recipe={recipe} />
           ))
+        )}
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className={style.paginationContainer}>
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 0}
+              className={style.paginationButton}
+            >
+              Anterior
+            </button>
+            <span className={style.paginationInfo}>
+              Página {page + 1} de {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={page >= totalPages - 1}
+              className={style.paginationButton}
+            >
+              Siguiente
+            </button>
+          </div>
         )}
       </div>
       <RecipeModal
@@ -172,15 +192,13 @@ export default function Home() {
                 width={200}
                 height={200}
                 alt={formData.title || 'Imagen de la receta'}
-                className={modalStyle.imagePreview}
-              />
+                className={modalStyle.imagePreview} />
             )}
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className={modalStyle.imageInput}
-            />
+              className={modalStyle.imageInput} />
           </div>
 
           {/* Title */}
@@ -191,8 +209,7 @@ export default function Home() {
               placeholder="Titulo"
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
-              className={modalStyle.input}
-            />
+              className={modalStyle.input} />
             {errors.title && <p className={modalStyle.error}>{errors.title}</p>}
           </section>
 
@@ -208,8 +225,7 @@ export default function Home() {
                     value={cat}
                     checked={formData.category === cat}
                     onChange={(e) => handleInputChange('category', e.target.value)}
-                    className={modalStyle.radioInput}
-                  />
+                    className={modalStyle.radioInput} />
                   {cat.charAt(0) + cat.slice(1).toLowerCase()}
                 </label>
               ))}
@@ -225,8 +241,7 @@ export default function Home() {
                   value="Sí"
                   checked={formData.fit === true}
                   onChange={() => handleInputChange('fit', true)}
-                  className={modalStyle.radioInput}
-                />
+                  className={modalStyle.radioInput} />
                 Sí
               </label>
               <label className={modalStyle.radioLabel}>
@@ -236,8 +251,7 @@ export default function Home() {
                   value="No"
                   checked={formData.fit === false}
                   onChange={() => handleInputChange('fit', false)}
-                  className={modalStyle.radioInput}
-                />
+                  className={modalStyle.radioInput} />
                 No
               </label>
             </fieldset>
@@ -249,8 +263,7 @@ export default function Home() {
                 placeholder="Ingredientes"
                 value={formData.ingredients}
                 onChange={(e) => handleInputChange('ingredients', e.target.value)}
-                className={modalStyle.textarea}
-              />
+                className={modalStyle.textarea} />
               {errors.ingredients && <p className={modalStyle.error}>{errors.ingredients}</p>}
             </section>
 
@@ -261,8 +274,7 @@ export default function Home() {
                 placeholder="Instrucciones"
                 value={formData.instructions}
                 onChange={(e) => handleInputChange('instructions', e.target.value)}
-                className={modalStyle.textarea}
-              />
+                className={modalStyle.textarea} />
               {errors.instructions && <p className={modalStyle.error}>{errors.instructions}</p>}
             </section>
           </div>
