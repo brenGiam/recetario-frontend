@@ -14,7 +14,7 @@ export const getRecipes = async (filters = {}) => {
         const url = `${BASE_URL}/recipes/filter${queryString ? `?${queryString}` : ''}`;
 
         const response = await fetch(url, {
-            method: 'GET',
+            method: 'GET'
         });
 
         if (!response.ok) {
@@ -34,10 +34,7 @@ export const getRecipe = async (recipeId) => {
         const url = `${BASE_URL}/recipes/${recipeId}`;
 
         const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'GET'
         });
 
         if (!response.ok) {
@@ -51,69 +48,41 @@ export const getRecipe = async (recipeId) => {
     }
 };
 
-export const registrarMascota = async (mascotaData, token) => {
+export const createRecipe = async (recipeData) => {
     try {
         const body = new FormData();
 
-        const mascota = {
-            especie: mascotaData.especie,
-            estado: mascotaData.estado,
-            nombre: mascotaData.nombre,
-            conCollar: mascotaData.conCollar,
-            raza: mascotaData.raza,
-            colores: mascotaData.colores,
-            caracteristicas: mascotaData.caracteristicas,
-            sexo: mascotaData.sexo,
-            provincia: mascotaData.provincia.trim(),
-            ciudad: mascotaData.ciudad.trim(),
-            barrio: mascotaData.barrio
+        const recipe = {
+            title: recipeData.title,
+            category: recipeData.category,
+            fit: recipeData.fit,
+            ingredients: recipeData.ingredients,
+            instructions: recipeData.instructions,
         };
 
-        console.log('Datos a enviar:', mascota);
+        body.append('recipe', JSON.stringify(recipe));
 
-        body.append('mascota', JSON.stringify(mascota));
-
-        if (mascotaData.foto && mascotaData.foto instanceof File) {
-            console.log('Agregando imagen:', mascotaData.foto.name, mascotaData.foto.size);
-            body.append('imagen', mascotaData.foto);
+        if (recipeData.image && recipeData.image instanceof File) {
+            body.append('image', recipeData.image);
         }
 
-        const res = await fetch(`${BASE_URL}/mascotas`, {
+        const res = await fetch(`${BASE_URL}/recipes`, {
             method: 'POST',
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
             body
         });
 
-        console.log('Status de respuesta:', res.status);
-
         if (!res.ok) {
-            let errorMessage = 'Error al registrar mascota';
+            let errorMessage = 'Error al crear receta';
             let responseText = '';
 
             try {
                 responseText = await res.text();
-                console.log('Respuesta del servidor:', responseText);
                 const errorData = JSON.parse(responseText);
                 errorMessage = errorData.message || errorData.error || errorMessage;
-            } catch (parseError) {
-                console.log('Error al parsear respuesta:', parseError);
+            } catch {
                 switch (res.status) {
                     case 400:
-                        errorMessage = 'Datos inválidos o incompletos - Revisar logs';
-                        break;
-                    case 401:
-                        errorMessage = 'No autorizado. Inicie sesión nuevamente';
-                        break;
-                    case 403:
-                        errorMessage = 'No tiene permisos para realizar esta acción';
-                        break;
-                    case 404:
-                        errorMessage = 'Usuario no encontrado';
-                        break;
-                    case 422:
-                        errorMessage = 'Los datos proporcionados no son válidos';
+                        errorMessage = 'Datos inválidos o incompletos';
                         break;
                     case 500:
                         errorMessage = `Error interno del servidor. Response: ${responseText}`;
@@ -122,82 +91,60 @@ export const registrarMascota = async (mascotaData, token) => {
                         errorMessage = `Error ${res.status}: ${res.statusText}. Response: ${responseText}`;
                 }
             }
-            const error = new Error(errorMessage);
-            error.status = res.status;
-            throw error;
+
+            throw new Error(errorMessage);
         }
 
         const result = await res.json();
-        console.log('Mascota registrada exitosamente:', result);
         return result;
+
     } catch (error) {
         if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            throw new Error('Error de conexión. Verifique su conexión a internet');
+            throw new Error('Error de conexión. Verifique su conexión a internet.');
         }
         throw error;
     }
 };
 
-export const actualizarMascota = async (datosMascota, token, idMascota) => {
+export const updateRecipe = async (recipeData, recipeId) => {
     try {
         const body = new FormData();
 
-        const mascota = {
-            id: idMascota,
-            nombre: datosMascota.nombre,
-            especie: datosMascota.especie,
-            estado: datosMascota.estado,
-            raza: datosMascota.raza,
-            conCollar: datosMascota.conCollar,
-            colores: datosMascota.colores,
-            caracteristicas: datosMascota.caracteristicas,
-            sexo: datosMascota.sexo,
-            provincia: datosMascota.provincia,
-            ciudad: datosMascota.ciudad,
-            barrio: datosMascota.barrio || '',
-            tel: datosMascota.tel,
+        const recipe = {
+            id: recipeId,
+            title: recipeData.title,
+            category: recipeData.category,
+            fit: recipeData.fit,
+            ingredients: recipeData.ingredients,
+            instructions: recipeData.instructions,
         };
 
-        body.append('mascota', JSON.stringify(mascota));
+        body.append('recipe', JSON.stringify(recipe));
 
-        if (datosMascota.foto instanceof File) {
-            body.append('imagen', datosMascota.foto);
-        } else {
-            console.log('No hay imagen nueva');
+        if (recipeData.image instanceof File) {
+            body.append('image', recipeData.image);
         }
 
-        const res = await fetch(`${BASE_URL}/mascotas`, {
+        const res = await fetch(`${BASE_URL}/recipes`, {
             method: 'PATCH',
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            body
+            body,
         });
 
         if (!res.ok) {
-            let errorMessage = 'Error al actualizar mascota';
+            let errorMessage = 'Error al actualizar receta';
             let responseText = '';
 
             try {
                 responseText = await res.text();
                 const errorData = JSON.parse(responseText);
                 errorMessage = errorData.message || errorData.error || errorMessage;
-            } catch (parseError) {
+            } catch {
                 switch (res.status) {
                     case 400:
-                        errorMessage = 'Datos inválidos o incompletos - Revisar logs';
-                        break;
-                    case 401:
-                        errorMessage = 'No autorizado. Inicie sesión nuevamente';
-                        break;
-                    case 403:
-                        errorMessage = 'No tiene permisos para realizar esta acción';
+                        errorMessage = 'Datos inválidos o incompletos';
                         break;
                     case 404:
-                        errorMessage = 'Mascota no encontrada';
-                        break;
-                    case 422:
-                        errorMessage = 'Los datos proporcionados no son válidos';
+                        errorMessage = 'Receta no encontrada.';
                         break;
                     case 500:
                         errorMessage = `Error interno del servidor. Response: ${responseText}`;
@@ -212,53 +159,40 @@ export const actualizarMascota = async (datosMascota, token, idMascota) => {
 
         const result = await res.json();
         return result;
+
     } catch (error) {
         if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            throw new Error('Error de conexión. Verifique su conexión a internet');
+            throw new Error('Error de conexión. Verifique su conexión a internet.');
         }
         throw error;
     }
 };
 
-export const eliminarMascota = async (token, idMascota) => {
+export const deleteRecipe = async (recipeId) => {
     try {
-        const respuesta = await fetch(`${BASE_URL}/mascotas/${idMascota}`, {
+        const response = await fetch(`${BASE_URL}/recipes/${recipeId}`, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
         });
 
-        if (!respuesta.ok) {
-            let errorMessage = 'Error al eliminar mascota';
+        const data = await response.json().catch(() => null);
 
-            try {
-                const errorData = await respuesta.json();
-                errorMessage = errorData.message || errorData.error || errorMessage;
-            } catch (parseError) {
-                switch (respuesta.status) {
-                    case 401:
-                        errorMessage = 'No autorizado';
-                        break;
-                    case 403:
-                        errorMessage = 'No tiene permisos para eliminar esta mascota';
-                        break;
-                    case 404:
-                        errorMessage = 'Mascota no encontrada';
-                        break;
-                    default:
-                        errorMessage = `Error ${respuesta.status}: ${respuesta.statusText}`;
-                }
-            }
+        if (!response.ok) {
+            const errorMessage =
+                data?.message ||
+                data?.error ||
+                (response.status === 404
+                    ? 'Receta no encontrada'
+                    : response.status === 500
+                        ? 'Error interno del servidor'
+                        : `Error ${response.status}: ${response.statusText}`);
 
             throw new Error(errorMessage);
         }
 
-        return true;
+        return data?.message || 'Receta eliminada exitosamente';
 
     } catch (error) {
-        console.error('Error al eliminar mascota:', error);
+        console.error('Error al eliminar receta:', error);
         throw error;
     }
 };
