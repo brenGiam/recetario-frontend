@@ -1,0 +1,73 @@
+.cardRecipe {
+    width: 300px;
+    border: 1px solid #F9D9AC;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #FFF;
+    box-shadow: 0 4px 8px rgba(123, 112, 102, 0.15);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cardRecipe:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(123, 112, 102, 0.25);
+}
+
+.cardImageContainer {
+    width: 100%;
+    height: 200px;
+    position: relative;
+}
+
+.cardImage {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.noImage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    color: #888;
+}
+
+.cardContent {
+    padding: 16px;
+    text-align: center;
+    color: #7B7066
+}
+
+.cardTitle {
+    font-size: 20px;
+    margin: 8px 0;
+}
+
+.cardCategory {
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+.cardfit {
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+.cardButton {
+    margin-top: 12px;
+    padding: 8px 16px;
+    background-color: #F18886;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.cardButton:hover {
+    background-color: #DA7B72;
+}

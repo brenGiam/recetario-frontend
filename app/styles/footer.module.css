@@ -1,0 +1,12 @@
+.footerContainer {
+    background-color: #BAD3C6;
+    padding: 1.2rem;
+    text-align: center;
+    margin-top: auto;
+}
+
+.footerText {
+    font-size: 0.95rem;
+    color: #7B7066;
+    font-weight: 500;
+}

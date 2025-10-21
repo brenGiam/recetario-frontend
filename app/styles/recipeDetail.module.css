@@ -1,0 +1,117 @@
+.recipeDetailContainer {
+    max-width: 900px;
+    margin: 3rem auto;
+    background-color: #FFF6E8;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(123, 112, 102, 0.2);
+    padding: 2rem;
+    color: #4B3B2B;
+}
+
+.recipeTitle {
+    text-align: center;
+    color: #F18886;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.recipeMeta {
+    text-align: center;
+    color: #A67B5B;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.recipeContentContainer {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+.recipeImage {
+    flex: 1;
+    max-width: 350px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(123, 112, 102, 0.2);
+}
+
+.noImage {
+    width: 350px;
+    height: 250px;
+    background-color: #E0C7A9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #7B7066;
+    border-radius: 10px;
+    font-size: 1rem;
+    box-shadow: 0 4px 8px rgba(123, 112, 102, 0.2);
+}
+
+.recipeInfo {
+    flex: 1;
+    min-width: 250px;
+}
+
+.recipeIngredientsTitle {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #6B5B4B;
+}
+
+.recipeIngredientsList {
+    list-style: disc;
+    padding-left: 1.5rem;
+    line-height: 1.6;
+}
+
+.recipeInstructions {
+    border-top: 1px solid #E0C7A9;
+    padding-top: 1.5rem;
+    color: #4B3B2B;
+}
+
+.recipeInstructionsTitle {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+    color: #6B5B4B;
+}
+
+.buttonsContainer {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin: 30px 0;
+    align-items: center;
+    gap: 10px;
+}
+
+.recipeDetailButton {
+    margin-top: 12px;
+    padding: 8px 16px;
+    background-color: #F18886;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.recipeDetailButton:hover {
+    background-color: #DA7B72;
+}
+
+.loading {
+    font-size: 1.2rem;
+    color: #777;
+}
+
+.error {
+    font-size: 1.2rem;
+    color: red;
+}
