@@ -1,21 +1,20 @@
 const BASE_URL = 'http://localhost:8080'
 
-export const getRecipes = async (categories = [], fit, page = 0, size = 10) => {
+export const getRecipes = async (categories = [], fit, search = '', page = 0, size = 10) => {
     try {
         const params = new URLSearchParams();
 
         (categories || []).forEach(cat => params.append('categories', cat));
-        if (fit !== undefined && fit !== null) params.append('fit', fit);
+        if (fit !== null && fit !== undefined) params.append('fit', fit);
+        if (search && search.trim() !== '') params.append('search', search.trim());
 
         params.append('page', page);
         params.append('size', size);
 
         const queryString = params.toString();
-        const url = `${BASE_URL}/recipes/filter${queryString ? `?${queryString}` : ''}`;
+        const url = `${BASE_URL}/recipes/search${queryString ? `?${queryString}` : ''}`;
 
-        const response = await fetch(url, {
-            method: 'GET'
-        });
+        const response = await fetch(url, { method: 'GET' });
 
         if (!response.ok) {
             const errorData = await response.text();
@@ -196,3 +195,4 @@ export const deleteRecipe = async (recipeId) => {
         throw error;
     }
 };
+

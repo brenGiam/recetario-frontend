@@ -1,0 +1,61 @@
+.aside {
+    position: sticky;
+    top: 80px;
+    align-self: flex-start;
+    width: 250px;
+    height: calc(100vh - 200px);
+    background-color: #fff5f4;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 2px 4px 10px rgba(241, 136, 134, 0.15);
+    overflow-y: auto;
+    margin-right: 20px;
+}
+
+.aside h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #F18886;
+    border-bottom: 2px solid #F18886;
+    padding-bottom: 8px;
+}
+
+.filterGroup {
+    margin-bottom: 20px;
+}
+
+.filterGroup label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+    font-size: 0.9rem;
+}
+
+.filterGroup input,
+.filterGroup select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #f3c2c1;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background-color: #fff;
+    transition: all 0.25s ease;
+}
+
+.filterGroup input:focus,
+.filterGroup select:focus {
+    outline: none;
+    border-color: #F18886;
+    box-shadow: 0 0 0 3px rgba(241, 136, 134, 0.15);
+}
+
+.filterGroup select {
+    cursor: pointer;
+}
+
+.filterGroup input::placeholder {
+    color: #aaa;
+}
