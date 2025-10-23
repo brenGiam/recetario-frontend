@@ -69,6 +69,8 @@
 .error {
     font-size: 1.2rem;
     color: red;
+    margin-top: 30px;
+    text-align: center;
 }
 
 .paginationContainer {

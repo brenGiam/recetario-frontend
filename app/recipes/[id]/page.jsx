@@ -119,7 +119,7 @@ export default function RecipeDetail() {
             const completeData = {
                 id,
                 title: recipe.title,
-                category: recipe.category,
+                categories: recipe.categories,
                 fit: recipe.fit,
                 ingredients: recipe.ingredients,
                 instructions: recipe.instructions,

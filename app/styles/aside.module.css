@@ -59,3 +59,18 @@
 .filterGroup input::placeholder {
     color: #aaa;
 }
+
+.searchButton {
+    width: 100%;
+    padding: 10px 0;
+    background-color: #F18886;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 3px 6px rgba(241, 136, 134, 0.3);
+    transition: all 0.25s ease;
+    margin-top: 40px;
+}

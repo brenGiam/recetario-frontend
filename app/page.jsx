@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { getRecipes, createRecipe } from '@/app/services/recipeService';
 import Image from 'next/image';
 import RecipeModal from '@/app/components/RecipeModal';
@@ -11,7 +10,6 @@ import modalStyle from '@/app/styles/recipeModal.module.css';
 import style from '@/app/styles/home.module.css';
 
 export default function Home() {
-  const router = useRouter();
   const [recipes, setRecipes] = useState([]);
   const [filters, setFilters] = useState({ category: '', fit: '', search: '' });
   const [page, setPage] = useState(0);

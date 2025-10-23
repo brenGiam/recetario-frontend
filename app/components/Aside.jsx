@@ -69,6 +69,12 @@ export default function Aside({ filters, onFilterChange, onSearch }) {
                     value={search}
                     onChange={handleSearchChange}
                     placeholder="Por ingredientes o título"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (onSearch) onSearch();
+                        }
+                    }}
                 />
                 <button
                     type="button"
