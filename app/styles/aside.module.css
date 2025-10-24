@@ -70,7 +70,12 @@
     cursor: pointer;
     font-weight: 600;
     font-size: 1rem;
-    box-shadow: 0 3px 6px rgba(241, 136, 134, 0.3);
-    transition: all 0.25s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
     margin-top: 40px;
+}
+
+.searchButton:hover {
+    background-color: #DA7B72;
+    transform: translateY(-1px);
 }

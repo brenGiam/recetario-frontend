@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getRecipe, deleteRecipe, updateRecipe } from '@/app/services/recipeService';
+import { getRecipe, deleteRecipe, updateRecipe, createRecipe } from '@/app/services/recipeService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faUtensils, faLeaf, faShare } from '@fortawesome/free-solid-svg-icons';
 import RecipeModal from '@/app/components/RecipeModal';
@@ -31,39 +31,14 @@ export default function RecipeDetail() {
     const [saving, setSaving] = useState(false);
     const [errors, setErrors] = useState({})
 
-    const handleEditModal = () => {
-        setFormData({
-            title: recipe.title || '',
-            categories: recipe.categories || [],
-            fit: recipe.fit,
-            ingredients: (recipe.ingredients || []).join(', '),
-            instructions: recipe.instructions || '',
-            image: recipe.imageUrl || null
-        });
 
-        setFormMode('edit');
-        setModalOpen(true);
-    };
-
-    const handleDelete = async (recipeId) => {
-        const confirmation = window.confirm(
-            '¿Estás seguro de que quieres eliminar esta receta? Esta acción no se puede deshacer.'
-        );
-
-        if (!confirmation) return;
-
-        try {
-            await deleteRecipe(recipeId);
-            alert('Receta eliminada exitosamente');
-
-            router.push('/');
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
-    const handleShare = () => {
-        // Logic to share recipe
+    const validateFields = () => {
+        const newErrors = {};
+        if (!formData.title.trim()) newErrors.title = 'El título es obligatorio';
+        if (!formData.ingredients.trim()) newErrors.ingredients = 'Los ingredientes son obligatorios';
+        if (!formData.instructions.trim()) newErrors.instructions = 'Las instrucciones son obligatorias';
+        if (formData.categories.length === 0) newErrors.categories = 'Seleccioná al menos una categoría';
+        return newErrors;
     };
 
     const refreshRecipe = async () => {
@@ -75,42 +50,23 @@ export default function RecipeDetail() {
         }
     };
 
-    const validateFields = () => {
-        const newErrors = {};
-        if (!formData.title.trim()) newErrors.title = 'El título es obligatorio';
-        if (!formData.ingredients.trim()) newErrors.ingredients = 'Los ingredientes son obligatorios';
-        if (!formData.instructions.trim()) newErrors.instructions = 'Las instrucciones son obligatorias';
-        if (formData.categories.length === 0) newErrors.categories = 'Seleccioná al menos una categoría';
-        return newErrors;
-    };
-
-    const handleInputChange = (field, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: value
-        }))
-
-        if (errors[field]) {
-            setErrors(prev => ({
-                ...prev,
-                [field]: ''
-            }))
-        }
-    }
-
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (formData.image && typeof formData.image !== 'string') {
-                URL.revokeObjectURL(formData.image);
-            }
-            setFormData(prev => ({ ...prev, image: file }));
-        }
-    }
-
     const handleUpdateOnlyImage = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        setErrors(prev => ({ ...prev, image: '' }));
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            setErrors(prev => ({ ...prev, image: 'Formato de imagen no válido. Permitidos: JPG, PNG o WEBP.' }));
+            return;
+        }
+
+        const maxSize = 20 * 1024 * 1024;
+        if (file.size > maxSize) {
+            setErrors(prev => ({ ...prev, image: 'El archivo supera el tamaño máximo permitido (20MB).' }));
+            return;
+        }
 
         setUpdatingPhoto(true);
         setError(null);
@@ -128,15 +84,18 @@ export default function RecipeDetail() {
 
             await updateRecipe(completeData, id);
             await refreshRecipe();
-
         } catch (err) {
-            setError(err.message);
+            if (err.message.includes('20MB') || err.message.toLowerCase().includes('archivo')) {
+                setErrors(prev => ({ ...prev, image: err.message }));
+            } else {
+                setError(err.message);
+            }
         } finally {
             setUpdatingPhoto(false);
         }
     };
 
-    const handleUpdateRecipe = async (e) => {
+    const handleSaveRecipe = async (e) => {
         e.preventDefault();
         if (saving) return;
 
@@ -156,15 +115,133 @@ export default function RecipeDetail() {
                 ...formData,
                 ingredients: formData.ingredients.split(',').map(i => i.trim()).filter(i => i)
             };
-            await updateRecipe({ ...payload, id }, id);
-            await refreshRecipe();
+            if (formMode === 'edit') {
+                await updateRecipe({ ...payload, id }, id);
+                await refreshRecipe();
+            } else {
+                const newRecipe = await createRecipe(payload);
+                router.push(`/recipes/${newRecipe.id}`);
+            }
             setModalOpen(false);
         } catch (err) {
-            setError(err.message);
+            if (err.message.includes('20MB') || err.message.toLowerCase().includes('archivo')) {
+                setErrors(prev => ({ ...prev, image: err.message }));
+            } else {
+                setError(err.message);
+            }
         } finally {
             setSaving(false);
         }
     };
+
+    const handleDelete = async (recipeId) => {
+        const confirmation = window.confirm(
+            '¿Estás seguro de que quieres eliminar esta receta? Esta acción no se puede deshacer.'
+        );
+
+        if (!confirmation) return;
+
+        try {
+            await deleteRecipe(recipeId);
+            alert('Receta eliminada exitosamente');
+
+            router.push('/');
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    const handleShare = async () => {
+        if (!recipe) return;
+
+        const message = `🍽 ${recipe.title}
+
+        Ingredientes:
+        ${recipe.ingredients.map(i => `- ${i}`).join('\n')}
+
+        Instrucciones:
+        ${recipe.instructions}
+        `.trim();
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: recipe.title,
+                    text: message,
+                });
+            } catch (error) {
+                console.error('Error al compartir:', error);
+            }
+        } else {
+            alert('La función de compartir no está disponible en este dispositivo');
+        }
+    };
+
+    const handleModal = (mode) => {
+        setFormMode(mode);
+        if (mode === 'edit') {
+            setFormData({
+                title: recipe.title || '',
+                categories: recipe.categories || [],
+                fit: recipe.fit,
+                ingredients: (recipe.ingredients || []).join(', '),
+                instructions: recipe.instructions || '',
+                image: recipe.imageUrl || null
+            })
+        } else {
+            setFormData({
+                title: '',
+                categories: [],
+                fit: true,
+                ingredients: [],
+                instructions: '',
+                image: null
+            })
+        };
+
+        setErrors({});
+        setModalOpen(true);
+    };
+
+    const handleInputChange = (field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }))
+
+        if (errors[field]) {
+            setErrors(prev => ({
+                ...prev,
+                [field]: ''
+            }))
+        }
+    }
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+
+        if (!file) return;
+
+        setErrors(prev => ({ ...prev, image: '' }));
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            setErrors(prev => ({ ...prev, image: 'Formato de imagen no válido. Permitidos: JPG, PNG o WEBP.' }));
+            return;
+        }
+
+        const maxSize = 20 * 1024 * 1024;
+        if (file.size > maxSize) {
+            setErrors(prev => ({ ...prev, image: 'El archivo supera el tamaño máximo permitido (20MB).' }));
+            return;
+        }
+
+        if (formData.image && typeof formData.image !== 'string') {
+            URL.revokeObjectURL(formData.image);
+        }
+
+        setFormData(prev => ({ ...prev, image: file }));
+    }
 
     useEffect(() => {
         if (!id) return;
@@ -228,6 +305,7 @@ export default function RecipeDetail() {
                         >
                             {updatingPhoto ? "Actualizando..." : "Actualizar Foto"}
                         </button>
+                        {errors.image && <p className={style.error}>{errors.image}</p>}
                     </div>
 
                     <div className={style.recipeInfo}>
@@ -246,8 +324,13 @@ export default function RecipeDetail() {
                 </div>
 
                 <div className={style.buttonsContainer}>
-                    <button className={style.recipeDetailButton} onClick={handleEditModal}>
-                        <FontAwesomeIcon icon={faEdit} /> Editar
+                    <button
+                        className={style.recipeDetailButton}
+                        onClick={() => handleModal('edit')}
+                    >
+                        <FontAwesomeIcon icon={faEdit}
+                        />
+                        Editar
                     </button>
                     <button
                         className={style.recipeDetailButton}
@@ -257,6 +340,14 @@ export default function RecipeDetail() {
                     </button>
                     <button className={style.recipeDetailButton} onClick={handleShare}>
                         <FontAwesomeIcon icon={faShare} /> Compartir
+                    </button>
+                </div>
+                <div className={style.newRecipeButtonContainer}>
+                    <button
+                        className={`${style.recipeDetailButton} ${style.newRecipeButton}`}
+                        onClick={() => handleModal('add')}
+                    >
+                        + Nueva Receta
                     </button>
                 </div>
             </div>
@@ -285,6 +376,7 @@ export default function RecipeDetail() {
                             onChange={handleImageChange}
                             className={modalStyle.imageInput}
                         />
+                        {errors.image && <p className={modalStyle.error}>{errors.image}</p>}
                     </div>
 
                     {/* Title */}
@@ -382,7 +474,7 @@ export default function RecipeDetail() {
 
                     <div className={modalStyle.buttonContainer}>
                         <button
-                            onClick={handleUpdateRecipe}
+                            onClick={handleSaveRecipe}
                             disabled={saving}
                             className={modalStyle.recipeModalButton}
                         >

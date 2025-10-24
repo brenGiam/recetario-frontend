@@ -28,6 +28,16 @@ export default function Home() {
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({})
 
+
+  const validateFields = () => {
+    const newErrors = {};
+    if (!formData.title.trim()) newErrors.title = 'El título es obligatorio';
+    if (!formData.ingredients.trim()) newErrors.ingredients = 'Los ingredientes son obligatorios';
+    if (!formData.instructions.trim()) newErrors.instructions = 'Las instrucciones son obligatorias';
+    if (formData.categories.length === 0) newErrors.categories = 'Seleccioná al menos una categoría';
+    return newErrors;
+  };
+
   const loadRecipes = async (pageNumber = 0, activeFilters = filters) => {
     try {
       setLoading(true);
@@ -54,9 +64,38 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    loadRecipes(page, filters);
-  }, [page]);
+  const handleCreateRecipe = async (e) => {
+    e.preventDefault();
+    if (saving) return;
+
+    const errorsDetected = validateFields();
+    if (Object.keys(errorsDetected).length > 0) {
+      setErrors(errorsDetected);
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      const payload = {
+        ...formData,
+        ingredients: formData.ingredients.split(',').map(i => i.trim())
+      };
+
+      await createRecipe(payload);
+      setModalOpen(false);
+      await loadRecipes(0);
+      setPage(0);
+    } catch (err) {
+      if (err.message.includes('20MB') || err.message.toLowerCase().includes('archivo')) {
+        setErrors(prev => ({ ...prev, image: err.message }));
+      } else {
+        setError(err.message);
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
@@ -105,50 +144,33 @@ export default function Home() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (formData.image && typeof formData.image !== 'string') {
-        URL.revokeObjectURL(formData.image);
-      }
-      setFormData(prev => ({ ...prev, image: file }));
-    }
-  }
 
-  const validateFields = () => {
-    const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = 'El título es obligatorio';
-    if (!formData.ingredients.trim()) newErrors.ingredients = 'Los ingredientes son obligatorios';
-    if (!formData.instructions.trim()) newErrors.instructions = 'Las instrucciones son obligatorias';
-    if (formData.categories.length === 0) newErrors.categories = 'Seleccioná al menos una categoría';
-    return newErrors;
-  };
+    if (!file) return;
 
-  const handleCreateRecipe = async (e) => {
-    e.preventDefault();
-    if (saving) return;
+    setErrors(prev => ({ ...prev, image: '' }));
 
-    const errorsDetected = validateFields();
-    if (Object.keys(errorsDetected).length > 0) {
-      setErrors(errorsDetected);
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setErrors(prev => ({ ...prev, image: 'Formato de imagen no válido. Permitidos: JPG, PNG o WEBP.' }));
       return;
     }
 
-    setSaving(true);
-    try {
-      const payload = {
-        ...formData,
-        ingredients: formData.ingredients.split(',').map(i => i.trim())
-      };
-
-      await createRecipe(payload);
-      setModalOpen(false);
-      await loadRecipes(0);
-      setPage(0);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
+    const maxSize = 20 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setErrors(prev => ({ ...prev, image: 'El archivo supera el tamaño máximo permitido (20MB).' }));
+      return;
     }
-  };
+
+    if (formData.image && typeof formData.image !== 'string') {
+      URL.revokeObjectURL(formData.image);
+    }
+
+    setFormData(prev => ({ ...prev, image: file }));
+  }
+
+  useEffect(() => {
+    loadRecipes(page, filters);
+  }, [page]);
 
   if (loading) return <div className={style.loading}>Cargando Recetas...</div>;
   if (error) return <div className={style.error}>Error: {error}</div>;
@@ -229,7 +251,9 @@ export default function Home() {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className={modalStyle.imageInput} />
+                className={modalStyle.imageInput}
+              />
+              {errors.image && <p className={modalStyle.error}>{errors.image}</p>}
             </div>
 
             {/* Title */}
