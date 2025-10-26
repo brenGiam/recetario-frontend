@@ -167,3 +167,241 @@
     margin-top: 30px;
     text-align: center;
 }
+
+/* RESPONSIVE */
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .recipeDetailContainer {
+        max-width: 750px;
+        margin: 2.5rem auto;
+        padding: 1.8rem;
+    }
+
+    .recipeTitle {
+        font-size: 1.8rem;
+    }
+
+    .recipeContentContainer {
+        gap: 1.5rem;
+    }
+
+    .recipeImage {
+        max-width: 300px;
+    }
+
+    .noImage {
+        width: 300px;
+        height: 220px;
+    }
+}
+
+/* Liitle mobile and tablet */
+@media (max-width: 768px) {
+    .recipeDetailContainer {
+        margin: 1.5rem auto;
+        padding: 1.5rem;
+        border-radius: 10px;
+    }
+
+    .recipeTitle {
+        font-size: 1.6rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .recipeMeta {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .recipeContentContainer {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .photoContainer {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .recipeImage {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .noImage {
+        width: 100%;
+        max-width: 400px;
+        height: 280px;
+    }
+
+    .updatePhotoButton {
+        width: 100%;
+        max-width: 250px;
+        padding: 10px 16px;
+    }
+
+    .recipeInfo {
+        width: 100%;
+    }
+
+    .recipeIngredientsTitle,
+    .recipeInstructionsTitle {
+        font-size: 1.15rem;
+    }
+
+    .recipeIngredientsList {
+        padding-left: 1.3rem;
+    }
+
+    .recipeInstructions {
+        padding-top: 1.2rem;
+    }
+
+    .buttonsContainer {
+        margin: 25px 0;
+        gap: 8px;
+    }
+
+    .recipeDetailButton {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+
+    .newRecipeButtonContainer {
+        margin-top: 1.5rem;
+    }
+
+    .newRecipeButton {
+        padding: 0.7rem 1.3rem;
+    }
+}
+
+/* Little mobile */
+@media (max-width: 480px) {
+    .recipeDetailContainer {
+        margin: 1rem 0.5rem;
+        padding: 1.2rem;
+        border-radius: 8px;
+    }
+
+    .recipeTitle {
+        font-size: 1.4rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .recipeMeta {
+        font-size: 0.9rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .recipeContentContainer {
+        gap: 1.2rem;
+    }
+
+    .photoContainer {
+        max-width: 100%;
+    }
+
+    .recipeImage {
+        border-radius: 8px;
+    }
+
+    .noImage {
+        max-width: 100%;
+        height: 240px;
+        font-size: 2rem;
+    }
+
+    .updatePhotoButton {
+        max-width: 100%;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+
+    .recipeIngredientsTitle,
+    .recipeInstructionsTitle {
+        font-size: 1.1rem;
+    }
+
+    .recipeIngredientsList {
+        font-size: 0.95rem;
+        padding-left: 1.2rem;
+        line-height: 1.5;
+    }
+
+    .recipeInstructions {
+        padding-top: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .recipeInstructions p {
+        line-height: 1.5;
+    }
+
+    .buttonsContainer {
+        margin: 20px 0;
+        gap: 6px;
+        flex-direction: column;
+    }
+
+    .recipeDetailButton {
+        width: 100%;
+        max-width: 280px;
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+
+    .newRecipeButtonContainer {
+        margin-top: 1.2rem;
+    }
+
+    .newRecipeButton {
+        width: 100%;
+        max-width: 280px;
+        padding: 0.7rem 1rem;
+    }
+
+    .loading,
+    .error {
+        font-size: 1rem;
+        margin-top: 1.5rem;
+    }
+}
+
+/* Very little mobile */
+@media (max-width: 360px) {
+    .recipeDetailContainer {
+        margin: 0.8rem 0.3rem;
+        padding: 1rem;
+    }
+
+    .recipeTitle {
+        font-size: 1.3rem;
+    }
+
+    .recipeMeta {
+        font-size: 0.85rem;
+    }
+
+    .noImage {
+        height: 200px;
+        font-size: 1.8rem;
+    }
+
+    .recipeIngredientsTitle,
+    .recipeInstructionsTitle {
+        font-size: 1rem;
+    }
+
+    .recipeIngredientsList,
+    .recipeInstructions {
+        font-size: 0.9rem;
+    }
+
+    .recipeDetailButton {
+        font-size: 0.85rem;
+        padding: 9px 10px;
+    }
+}

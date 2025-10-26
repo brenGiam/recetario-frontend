@@ -71,3 +71,77 @@
 .cardButton:hover {
     background-color: #DA7B72;
 }
+
+/* RESPONSIVE */
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .cardRecipe {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    .cardImageContainer {
+        height: 180px;
+    }
+
+    .cardTitle {
+        font-size: 18px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .cardRecipe {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .cardImageContainer {
+        height: 220px;
+    }
+
+    .cardContent {
+        padding: 14px;
+    }
+
+    .cardTitle {
+        font-size: 19px;
+    }
+
+    .cardCategory,
+    .cardFit {
+        font-size: 13px;
+    }
+
+    .cardButton {
+        padding: 10px 18px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Little mobile (hasta 480px) */
+@media (max-width: 480px) {
+    .cardImageContainer {
+        height: 200px;
+    }
+
+    .cardContent {
+        padding: 12px;
+    }
+
+    .cardTitle {
+        font-size: 18px;
+    }
+
+    .cardCategory,
+    .cardFit {
+        font-size: 12px;
+    }
+
+    .cardButton {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+    }
+}

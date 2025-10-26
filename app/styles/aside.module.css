@@ -79,3 +79,86 @@
     background-color: #DA7B72;
     transform: translateY(-1px);
 }
+
+/* RESPONSIVE */
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .aside {
+        width: 220px;
+        padding: 15px;
+        margin-right: 15px;
+    }
+
+    .aside h3 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+
+    .filterGroup {
+        margin-bottom: 15px;
+    }
+
+    .searchButton {
+        margin-top: 30px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .aside {
+        position: static;
+        width: 100%;
+        height: auto;
+        margin-right: 0;
+        margin-bottom: 20px;
+        padding: 15px;
+    }
+
+    .aside h3 {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    .filterGroup {
+        margin-bottom: 15px;
+    }
+
+    .filterGroup label {
+        font-size: 0.85rem;
+    }
+
+    .filterGroup input,
+    .filterGroup select {
+        padding: 8px;
+        font-size: 0.85rem;
+    }
+
+    .searchButton {
+        margin-top: 20px;
+        padding: 12px 0;
+        font-size: 0.95rem;
+    }
+}
+
+/* Little mobile (hasta 480px) */
+@media (max-width: 480px) {
+    .aside {
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .aside h3 {
+        font-size: 1rem;
+        margin-bottom: 12px;
+    }
+
+    .filterGroup {
+        margin-bottom: 12px;
+    }
+
+    .searchButton {
+        margin-top: 15px;
+    }
+}

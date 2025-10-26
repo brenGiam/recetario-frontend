@@ -8,3 +8,38 @@
     font-size: 2.5rem;
     color: #7B7066;
 }
+
+.headerContainer {
+    background-color: #BAD3C6;
+    padding: 20px;
+    text-align: center;
+}
+
+.headerTitle {
+    font-size: 2.5rem;
+    color: #7B7066;
+}
+
+/* RESPONSIVE */
+
+/* Tablets */
+@media (max-width: 768px) {
+    .headerContainer {
+        padding: 15px;
+    }
+
+    .headerTitle {
+        font-size: 2rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .headerContainer {
+        padding: 12px 10px;
+    }
+
+    .headerTitle {
+        font-size: 1.6rem;
+    }
+}
