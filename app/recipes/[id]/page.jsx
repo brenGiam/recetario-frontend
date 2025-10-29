@@ -155,14 +155,14 @@ export default function RecipeDetail() {
         if (!recipe) return;
 
         const message = `
-            🍽 *${recipe.title}*
+🍽 *${recipe.title}*
 
-            🧂 *Ingredientes:*
-            ${recipe.ingredients.map(i => `• ${i}`).join('\n')}
+🧂 *Ingredientes:*
+${recipe.ingredients.map(i => `• ${i}`).join('\n')}
 
-            👩‍🍳 *Instrucciones:*
-            ${recipe.instructions}
-            `.trim();
+👩‍🍳 *Instrucciones:*
+${recipe.instructions}
+`.trim();
 
         if (navigator.share) {
             try {
