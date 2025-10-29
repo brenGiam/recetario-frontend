@@ -349,6 +349,12 @@ export default function RecipeDetail() {
                     >
                         + Nueva Receta
                     </button>
+                    <button
+                        className={`${style.recipeDetailButton} ${style.newRecipeButton}`}
+                        onClick={() => router.back()}
+                    >
+                        Atrás
+                    </button>
                 </div>
             </div>
             <RecipeModal
