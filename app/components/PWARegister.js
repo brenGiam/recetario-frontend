@@ -8,10 +8,12 @@ export default function PWARegister() {
             navigator.serviceWorker
                 .register('/sw.js')
                 .then((registration) => {
-                    console.log('Service Worker registrado:', registration);
+                    console.log('✅ Service Worker registrado:', registration);
+
+                    registration.update();
                 })
                 .catch((error) => {
-                    console.error('Error al registrar Service Worker:', error);
+                    console.error('❌ Error al registrar Service Worker:', error);
                 });
         }
     }, []);
