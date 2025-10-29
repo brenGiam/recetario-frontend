@@ -154,14 +154,15 @@ export default function RecipeDetail() {
     const handleShare = async () => {
         if (!recipe) return;
 
-        const message = `🍽 ${recipe.title}
+        const message = `
+            🍽 *${recipe.title}*
 
-        Ingredientes:
-        ${recipe.ingredients.map(i => `- ${i}`).join('\n')}
+            🧂 *Ingredientes:*
+            ${recipe.ingredients.map(i => `• ${i}`).join('\n')}
 
-        Instrucciones:
-        ${recipe.instructions}
-        `.trim();
+            👩‍🍳 *Instrucciones:*
+            ${recipe.instructions}
+            `.trim();
 
         if (navigator.share) {
             try {
