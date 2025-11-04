@@ -1,6 +1,7 @@
 import '@/app/styles/globals.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ProtectedPage from './components/ProtectedPage';
 import PWARegister from './components/PWARegister';
 
 export const metadata = {
@@ -33,9 +34,11 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <PWARegister />
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <ProtectedPage>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </ProtectedPage>
       </body>
     </html>
   );
