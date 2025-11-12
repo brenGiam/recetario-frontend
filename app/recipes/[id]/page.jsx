@@ -356,6 +356,12 @@ ${recipe.instructions}
                     >
                         Atrás
                     </button>
+                    <button
+                        className={`${style.recipeDetailButton} ${style.newRecipeButton}`}
+                        onClick={() => router.push("/")}
+                    >
+                        Inicio
+                    </button>
                 </div>
             </div>
             <RecipeModal
